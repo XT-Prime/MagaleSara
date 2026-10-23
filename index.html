@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مقاله‌سرا | جایی برای ایده‌های ماندگار</title>
+    <meta name="description" content="مقاله‌سرا — پلتفرم انتشار و مطالعه مقالات فارسی در حوزه تکنولوژی، علم و آموزش">
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Toast -->
+    <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+    <header class="site-header">
+        <div class="container header-inner">
+            <div class="logo" onclick="showHome()" role="button" tabindex="0" aria-label="بازگشت به خانه">
+                <span class="logo-mark"><i class="fa-solid fa-book-open"></i></span>
+                <span class="logo-text">مقاله‌سرا</span>
+                <span class="logo-dot"></span>
+            </div>
+            <nav class="nav" aria-label="ناوبری اصلی">
+                <a class="nav-link active" onclick="showHome()" id="navHome">خانه</a>
+                <a class="nav-link" onclick="document.getElementById('articlesAnchor').scrollIntoView({behavior:'smooth'})">مقالات</a>
+                <button id="darkBtn" class="icon-btn" onclick="toggleDarkMode()" aria-label="تغییر تم">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- HOME -->
+        <section id="home-section">
+            <div class="hero">
+                <div class="hero-top">
+                    <span class="hero-badge"><i class="fa-solid fa-sparkles"></i> پلتفرم انتشار مقاله فارسی</span>
+                    <h1 class="hero-title">جایی برای<br><span class="accent">ایده‌های ماندگار</span></h1>
+                    <p class="hero-sub">مقالاتی دقیق، کاربردی و به‌روز — از تکنولوژی و علم تا آموزش. بخوانید، یاد بگیرید و دانش خود را منتشر کنید.</p>
+                    <div class="search-box" role="search">
+                        <input type="text" id="searchInput" placeholder="جستجو در عنوان و خلاصه مقالات..." oninput="searchArticles()" autocomplete="off">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                    <div class="hero-meta" id="heroStats">
+                        <!-- via JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div id="articlesAnchor"></div>
+
+            <div class="section-head">
+                <div>
+                    <h2 class="section-title">تازه‌ترین مقالات</h2>
+                    <p class="section-desc">بر اساس دسته‌بندی فیلتر کنید:</p>
+                </div>
+                <span class="count-badge" id="articlesCountBadge"></span>
+            </div>
+
+            <div class="categories" id="categoriesContainer" aria-label="دسته‌بندی‌ها"></div>
+
+            <div id="articlesGrid" class="grid"></div>
+            <div id="emptyState" class="empty-state hidden">
+                <div class="empty-icon"><i class="fa-regular fa-file-lines"></i></div>
+                <h3>مقاله‌ای یافت نشد</h3>
+                <p>فیلتر یا عبارت جستجو را تغییر دهید.</p>
+                <button class="btn-ghost" onclick="clearFilters()">پاک کردن فیلترها</button>
+            </div>
+        </section>
+
+        <!-- SINGLE -->
+        <section id="single-section" class="hidden">
+            <button class="back-btn" onclick="showHome()"><i class="fa-solid fa-arrow-right"></i> بازگشت به مقالات</button>
+            <article id="singleArticle" class="single-article"></article>
+        </section>
+
+        <!-- ADMIN -->
+        <section id="admin-section" class="hidden">
+            <div id="loginBox" class="card admin-card">
+                <div class="admin-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <h2>ورود به پنل مدیریت</h2>
+                <p class="muted">برای مدیریت مقالات و دسته‌بندی‌ها وارد شوید</p>
+                <div class="form-stack">
+                    <input type="password" id="adminPass" placeholder="رمز عبور" onkeydown="if(event.key==='Enter') login()">
+                    <button class="btn-primary" onclick="login()"><i class="fa-solid fa-arrow-left"></i> ورود</button>
+                    <button class="btn-ghost" onclick="showHome()">بازگشت به سایت</button>
+                </div>
+                <p id="loginError" class="error"></p>
+            </div>
+
+            <div id="dashboard" class="hidden">
+                <div class="dashboard-header">
+                    <div>
+                        <h2>پنل مدیریت</h2>
+                        <p class="muted" id="dashboardSub"></p>
+                    </div>
+                    <button class="btn-danger" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i> خروج</button>
+                </div>
+
+                <div class="admin-grid">
+                    <div class="card">
+                        <h3><i class="fa-solid fa-layer-group"></i> مدیریت دسته‌بندی‌ها</h3>
+                        <p class="muted small">دسته‌های جدید اضافه کنید یا حذف کنید. حذف دسته مقالات آن را پاک نمی‌کند.</p>
+                        <div class="inline-form">
+                            <input type="text" id="newCategoryInput" placeholder="نام دسته جدید مثلا: سلامت">
+                            <button class="btn-primary small" onclick="addCategory()">افزودن</button>
+                        </div>
+                        <div id="categoryListAdmin" class="cat-admin-list"></div>
+                    </div>
+
+                    <div class="card">
+                        <h3 id="formTitle">افزودن مقاله جدید</h3>
+                        <form id="articleForm" onsubmit="saveArticle(event)">
+                            <input type="hidden" id="editId">
+                            <label class="field"><span>عنوان مقاله</span><input type="text" id="title" placeholder="مثلا: آینده هوش مصنوعی در آموزش" required></label>
+                            <label class="field"><span>دسته‌بندی</span><select id="category" required></select></label>
+                            <label class="field"><span>لینک تصویر (اختیاری)</span><input type="url" id="image" placeholder="https://..."></label>
+                            <label class="field"><span>خلاصه کوتاه</span><input type="text" id="excerpt" placeholder="یک جمله جذاب درباره مقاله" required></label>
+                            <label class="field"><span>متن کامل مقاله</span><textarea id="content" rows="7" placeholder="متن کامل را اینجا بنویسید..." required></textarea></label>
+                            <div class="form-actions">
+                                <button type="submit" class="btn-primary" id="submitBtn">انتشار مقاله</button>
+                                <button type="button" class="btn-ghost hidden" id="cancelEdit" onclick="cancelArticleEdit()">انصراف از ویرایش</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card" style="margin-top:20px">
+                    <div class="list-head">
+                        <h3>مدیریت مقالات</h3>
+                        <span class="count-badge" id="count"></span>
+                    </div>
+                    <div id="adminList"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <div class="logo footer-logo"><span class="logo-mark"><i class="fa-solid fa-book-open"></i></span> مقاله‌سرا</div>
+                <p>پلتفرمی ساده و حرفه‌ای برای نوشتن، خواندن و به‌اشتراک‌گذاری دانش. طراحی‌شده برای تمرکز بر محتوا.</p>
+                <div class="social-row">
+                    <a href="#" aria-label="توییتر"><i class="fa-brands fa-x-twitter"></i></a>
+                    <a href="#" aria-label="اینستاگرام"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" aria-label="تلگرام"><i class="fa-brands fa-telegram"></i></a>
+                </div>
+            </div>
+            <div>
+                <h4>دسته‌بندی‌ها</h4>
+                <ul id="footerCats" class="footer-links"></ul>
+            </div>
+            <div>
+                <h4>دسترسی سریع</h4>
+                <ul class="footer-links">
+                    <li><a onclick="showHome()">خانه</a></li>
+                    <li><a onclick="document.getElementById('searchInput').focus(); showHome(); setTimeout(()=>document.getElementById('searchInput').focus(),150)">جستجو در مقالات</a></li>
+                    <li><a onclick="document.getElementById('articlesAnchor').scrollIntoView({behavior:'smooth'})">تازه‌ترین‌ها</a></li>
+                    <li><a onclick="showAdminLogin()" class="admin-footer-link"><i class="fa-solid fa-user-gear"></i> ورود مدیریت</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>خبرنامه</h4>
+                <p class="muted small">از مقالات جدید باخبر شوید (نمایشی)</p>
+                <form class="newsletter" onsubmit="event.preventDefault(); showToast('به‌زودی فعال می‌شود','info')">
+                    <input type="email" placeholder="ایمیل شما" required>
+                    <button type="submit" class="btn-primary small">عضویت</button>
+                </form>
+            </div>
+        </div>
+        <div class="container footer-bottom">
+            <span>© 2026  مقاله‌سرا — طراحی شده توسط محمد طاها عقلمند <i class="fa-solid fa-heart" style="color:#e11d48"></i></span>
+            <span class="muted small">نسخه ۲.۰ • بهینه برای موبایل و دسکتاپ</span>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
